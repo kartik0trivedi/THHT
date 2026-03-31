@@ -1,6 +1,6 @@
 # Thinking Hard / Hardly Thinking (THHT)
 
-A personal static blog built with [Astro](https://astro.build). Hosted on Google Drive for portability.
+A personal static blog built with [Astro](https://astro.build).
 
 ---
 
@@ -11,33 +11,20 @@ Before you can run this project on a new machine, make sure you have:
 - **Node.js ≥ 22.12.0** — check with `node -v`
   - Install via [nodejs.org](https://nodejs.org) or a version manager like [nvm](https://github.com/nvm-sh/nvm)
 - **npm** — comes with Node, check with `npm -v`
-- **Google Drive** syncing this folder to your local machine
 
 ---
 
 ## First-time Setup on a New Computer
 
 ```sh
-# 1. Navigate into the project folder (adjust path as needed)
-cd ~/Library/CloudStorage/GoogleDrive-kartik0trivedi@gmail.com/My\ Drive/THHT
-
-# 2. Install dependencies (node_modules is not synced via Drive)
+# 1. Install dependencies
 npm install
 
-# 3. Create the local cache directory (required — see note below)
-mkdir -p ~/.cache/thht-astro
-
-# 4. Start the dev server
+# 2. Start the dev server
 npm run dev
 ```
 
-> **Why `mkdir ~/.cache/thht-astro`?**
-> The project lives on Google Drive, whose virtual filesystem doesn't support
-> atomic file writes. Astro's content cache is pointed to a local directory
-> to avoid `UnknownFilesystemError` on startup. This is configured in
-> `astro.config.mjs` via `cacheDir`.
-
-The site will be available at **http://localhost:4321**.
+The site will be available at <http://localhost:4321>.
 
 ---
 
@@ -57,7 +44,7 @@ Stop the dev server with **Ctrl + C**.
 
 Create a new `.md` file in `src/content/blog/`:
 
-```
+```sh
 src/content/blog/your-post-slug.md
 ```
 
@@ -80,7 +67,7 @@ The post will appear at `/blog/your-post-slug/` automatically.
 
 ## Project Structure
 
-```
+```text
 THHT/
 ├── public/              # Static assets (favicon, fonts)
 ├── src/
@@ -109,7 +96,7 @@ THHT/
 │   ├── styles/
 │   │   └── global.css        # All global styles
 │   └── consts.ts             # Site title, description, GA ID
-├── astro.config.mjs     # Astro config (cacheDir set to ~/.cache/thht-astro)
+├── astro.config.mjs     # Astro config
 ├── package.json
 └── tsconfig.json
 ```

@@ -1,0 +1,70 @@
+/*! MIT License
+ * Copyright (c) 2018 GitHub Inc.
+ * https://github.com/primer/primitives/blob/main/LICENSE
+ */
+
+main {
+  /* Site Design Tokens */
+  --ink: #1a1a1a;
+  --ink-muted: #6b6b6b;
+  --paper: #faf9f7;
+  --paper-warm: #f5f3ef;
+  --border: #e8e4de;
+  --accent: #c0392b;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Giscus Overrides */
+  --color-canvas-default: var(--paper);
+  --color-canvas-overlay: var(--paper);
+  --color-canvas-inset: var(--paper-warm);
+  --color-canvas-subtle: var(--paper-warm);
+  
+  --color-border-default: var(--border);
+  --color-border-muted: var(--border);
+  
+  --color-fg-default: var(--ink);
+  --color-fg-muted: var(--ink-muted);
+  --color-fg-subtle: var(--ink-muted);
+  
+  --color-accent-fg: var(--accent);
+  --color-accent-emphasis: var(--accent);
+  --color-accent-muted: rgba(192, 57, 43, 0.4);
+  --color-accent-subtle: rgba(192, 57, 43, 0.1);
+  
+  --color-btn-text: var(--ink);
+  --color-btn-bg: var(--paper-warm);
+  --color-btn-border: var(--border);
+  --color-btn-hover-bg: var(--border);
+  --color-btn-hover-border: var(--border);
+  --color-btn-active-bg: var(--border);
+  
+  --color-btn-primary-bg: var(--accent);
+  --color-btn-primary-border: var(--accent);
+  --color-btn-primary-hover-bg: #a93226; /* Slightly darker red */
+  
+  /* Typography */
+  --text-font: var(--font-sans);
+}
+
+/* Custom Tweaks to make it look native */
+.gsc-reply-content, 
+.gsc-comment-content {
+  font-family: var(--font-sans) !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+.gsc-main {
+  padding: 0 !important;
+}
+
+.gsc-comment-box-textarea {
+  background-color: var(--paper) !important;
+  border-color: var(--border) !important;
+  font-family: var(--font-sans) !important;
+}
+
+.gsc-left-header,
+.gsc-right-header {
+  border-bottom: 1px solid var(--border) !important;
+}
