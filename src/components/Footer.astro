@@ -1,16 +1,22 @@
 ---
+import { Image } from 'astro:assets';
+import thhtLogo from '../assets/thht-logo.svg';
+
 const today = new Date();
 ---
 
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <span class="brand-mark">THHT</span>
+      <a href="/" class="brand-link" aria-label="Go home">
+        <Image src={thhtLogo} alt="THHT" class="brand-logo" />
+      </a>
       <p class="tagline">Thinking Hard / Hardly Thinking</p>
     </div>
     <div class="footer-meta">
       <nav class="footer-nav" aria-label="Footer">
         <a href="/blog">Writing</a>
+        <a href="/tags">Topics</a>
         <a href="/about">About</a>
         <a href="/rss.xml" title="RSS Feed">RSS</a>
       </nav>
@@ -30,23 +36,33 @@ const today = new Date();
   }
 
   .footer-inner {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    align-items: start;
     gap: 2rem;
     width: var(--content-width);
     max-width: calc(100% - var(--content-padding) * 2);
     margin: 0 auto;
   }
 
-  .brand-mark {
-    font-family: var(--font-serif);
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--ink);
-    letter-spacing: 0.05em;
+  .footer-brand {
+    display: contents;
+  }
+
+  .brand-link {
+    display: inline-flex;
+    text-decoration: none;
+    margin-bottom: 0;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .brand-logo {
     display: block;
-    margin-bottom: 0.25rem;
+    width: auto;
+    height: 52px;
   }
 
   .tagline {
@@ -55,9 +71,13 @@ const today = new Date();
     font-family: var(--font-sans);
     margin: 0;
     letter-spacing: 0.02em;
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
   }
 
   .footer-meta {
+    display: contents;
     text-align: right;
   }
 
@@ -65,7 +85,21 @@ const today = new Date();
     display: flex;
     gap: 1.25rem;
     justify-content: flex-end;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .copyright {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    margin: 0;
+    font-family: var(--font-sans);
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+    text-align: right;
   }
 
   .footer-nav a {
@@ -80,25 +114,27 @@ const today = new Date();
     color: var(--ink);
   }
 
-  .copyright {
-    font-size: 0.75rem;
-    color: var(--ink-muted);
-    margin: 0;
-    font-family: var(--font-sans);
-  }
-
   @media (max-width: 520px) {
     .footer-inner {
+      display: flex;
       flex-direction: column;
+      align-items: flex-start;
       gap: 1.5rem;
     }
 
+    .footer-brand,
     .footer-meta {
+      display: block;
       text-align: left;
+    }
+
+    .brand-link {
+      margin-bottom: 0.2rem;
     }
 
     .footer-nav {
       justify-content: flex-start;
+      margin-bottom: 0.55rem;
     }
   }
 </style>

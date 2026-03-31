@@ -1,19 +1,18 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { Image } from 'astro:assets';
 import HeaderLink from './HeaderLink.astro';
+import thhtLogo from '../assets/thht-logo.svg';
 ---
 
 <header>
   <nav>
     <a href="/" class="site-title" aria-label="Go home">
-      <span class="title-main">THHT</span>
-      <span class="title-sub">Thinking Hard / Hardly Thinking</span>
+      <Image src={thhtLogo} alt="THHT" class="site-logo" />
     </a>
 
     <div class="nav-links">
       <HeaderLink href="/">Home</HeaderLink>
       <HeaderLink href="/blog">Writing</HeaderLink>
-      <HeaderLink href="/tags">Topics</HeaderLink>
       <HeaderLink href="/about">About</HeaderLink>
     </div>
   </nav>
@@ -43,42 +42,25 @@ import HeaderLink from './HeaderLink.astro';
   }
 
   .site-title {
-    display: flex;
-    flex-direction: column;
+    display: inline-flex;
+    align-items: center;
     text-decoration: none;
-    line-height: 1.1;
     flex-shrink: 0;
   }
 
-  .title-main {
-    font-family: var(--font-serif);
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--ink);
-    letter-spacing: 0.05em;
-    transition: color var(--transition);
+  .site-logo {
+    display: block;
+    width: auto;
+    height: 52px;
   }
 
-  .title-sub {
-    font-family: var(--font-sans);
-    font-size: 0.62rem;
-    font-weight: 400;
-    color: var(--ink-muted);
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-
-  .site-title:hover .title-main {
-    color: var(--accent);
+  .site-title:hover .site-logo {
+    opacity: 0.86;
   }
 
   .nav-links {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-  }
-
-  @media (max-width: 520px) {
-    .title-sub { display: none; }
   }
 </style>

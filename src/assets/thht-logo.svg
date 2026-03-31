@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">THHT boxed slash logo</title>
+  <desc id="desc">A block THHT wordmark split into two open boxes by a bold forward slash.</desc>
+
+  <g transform="translate(28 36)">
+    <!-- frame: 1x weight = 24 -->
+    <rect x="42" y="266" width="774" height="24" fill="#000000"/>
+    <rect x="42" y="266" width="24" height="477" fill="#000000"/>
+    <polygon points="42,719 852,719 842,743 42,743" fill="#000000"/>
+
+    <polygon points="1091,266 1823,266 1823,290 1081,290" fill="#000000"/>
+    <rect x="1799" y="266" width="24" height="477" fill="#000000"/>
+    <rect x="1049" y="719" width="774" height="24" fill="#000000"/>
+
+    <!-- letters: 2.618x weight = 63 -->
+    <!-- spacing uses the same system: primary gap = 63, slash-side breathing tightened to match -->
+    <!-- left T -->
+    <rect x="138" y="336" width="270" height="63" fill="#000000"/>
+    <rect x="242" y="399" width="63" height="261" fill="#000000"/>
+
+    <!-- left H -->
+    <rect x="471" y="336" width="63" height="324" fill="#000000"/>
+    <rect x="534" y="467" width="147" height="63" fill="#000000"/>
+    <rect x="681" y="336" width="63" height="324" fill="#000000"/>
+
+    <!-- slash: 4.236x weight = 102 -->
+    <polygon points="758,823 860,823 1126,186 1024,186" fill="#000000"/>
+
+    <!-- right H -->
+    <rect x="1121" y="336" width="63" height="324" fill="#000000"/>
+    <rect x="1184" y="467" width="147" height="63" fill="#000000"/>
+    <rect x="1331" y="336" width="63" height="324" fill="#000000"/>
+
+    <!-- right T -->
+    <rect x="1457" y="336" width="270" height="63" fill="#000000"/>
+    <rect x="1561" y="399" width="63" height="261" fill="#000000"/>
+  </g>
+</svg>

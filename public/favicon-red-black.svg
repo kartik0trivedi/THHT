@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">THHT favicon black background variant</title>
+  <desc id="desc">A simplified THHT favicon with red split boxes, a white slash, and a black background.</desc>
+
+  <rect width="128" height="128" fill="#111111"/>
+
+  <g transform="translate(0 4)">
+    <g fill="#c0392b">
+      <rect x="14" y="32" width="38" height="6"/>
+      <rect x="14" y="32" width="6" height="56"/>
+      <polygon points="14,82 49,82 47,88 14,88"/>
+
+      <polygon points="78,32 114,32 114,38 76,38"/>
+      <rect x="108" y="32" width="6" height="56"/>
+      <rect x="76" y="82" width="38" height="6"/>
+    </g>
+
+    <polygon points="40,100 56,100 89,20 73,20" fill="#ffffff"/>
+  </g>
+</svg>
