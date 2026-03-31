@@ -1,0 +1,104 @@
+---
+const today = new Date();
+---
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="brand-mark">THHT</span>
+      <p class="tagline">Thinking Hard / Hardly Thinking</p>
+    </div>
+    <div class="footer-meta">
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="/blog">Writing</a>
+        <a href="/about">About</a>
+        <a href="/rss.xml" title="RSS Feed">RSS</a>
+      </nav>
+      <p class="copyright">
+        &copy; {today.getFullYear()} &mdash; Made with quiet persistence.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--paper-warm);
+    padding: 3rem var(--content-padding) 4rem;
+    margin-top: 4rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    width: var(--content-width);
+    max-width: calc(100% - var(--content-padding) * 2);
+    margin: 0 auto;
+  }
+
+  .brand-mark {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .tagline {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .footer-meta {
+    text-align: right;
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: flex-end;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-nav a {
+    font-family: var(--font-sans);
+    font-size: 0.83rem;
+    color: var(--ink-muted);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  .footer-nav a:hover {
+    color: var(--ink);
+  }
+
+  .copyright {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  @media (max-width: 520px) {
+    .footer-inner {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .footer-meta {
+      text-align: left;
+    }
+
+    .footer-nav {
+      justify-content: flex-start;
+    }
+  }
+</style>

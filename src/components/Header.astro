@@ -1,0 +1,84 @@
+---
+import { SITE_TITLE } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<header>
+  <nav>
+    <a href="/" class="site-title" aria-label="Go home">
+      <span class="title-main">THHT</span>
+      <span class="title-sub">Thinking Hard / Hardly Thinking</span>
+    </a>
+
+    <div class="nav-links">
+      <HeaderLink href="/">Home</HeaderLink>
+      <HeaderLink href="/blog">Writing</HeaderLink>
+      <HeaderLink href="/tags">Topics</HeaderLink>
+      <HeaderLink href="/about">About</HeaderLink>
+    </div>
+  </nav>
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250, 249, 247, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 var(--content-padding);
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: var(--content-width);
+    max-width: calc(100% - var(--content-padding) * 2);
+    margin: 0 auto;
+    height: 60px;
+    gap: 1rem;
+  }
+
+  .site-title {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    line-height: 1.1;
+    flex-shrink: 0;
+  }
+
+  .title-main {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    transition: color var(--transition);
+  }
+
+  .title-sub {
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    font-weight: 400;
+    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .site-title:hover .title-main {
+    color: var(--accent);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  @media (max-width: 520px) {
+    .title-sub { display: none; }
+  }
+</style>
