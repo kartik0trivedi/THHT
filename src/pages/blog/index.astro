@@ -34,18 +34,65 @@ const posts = (await getCollection('blog')).sort(
         margin: 0;
       }
 
+      .archive-tools {
+        margin-bottom: 2rem;
+      }
+
+      .search-label {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+        margin-bottom: 0.7rem;
+      }
+
+      .search-input {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: var(--paper-warm);
+        color: var(--ink);
+        padding: 0.95rem 1rem;
+        border-radius: 10px;
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        line-height: 1.4;
+        transition: border-color var(--transition), box-shadow var(--transition);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-dim);
+      }
+
+      .search-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.7rem;
+      }
+
+      .search-hint,
+      .search-count {
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: var(--ink-muted);
+        margin: 0;
+      }
+
       .post-list {
         list-style: none;
         margin: 0;
         padding: 0;
+        border-top: 1px solid var(--border);
       }
 
       .post-item {
         border-bottom: 1px solid var(--border);
-      }
-
-      .post-item:first-child {
-        border-top: 1px solid var(--border);
       }
 
       .post-link {
@@ -103,7 +150,25 @@ const posts = (await getCollection('blog')).sort(
         text-align: center;
       }
 
+      .search-empty {
+        display: none;
+        font-family: var(--font-serif);
+        font-size: 1.05rem;
+        color: var(--ink-muted);
+        padding: 2rem 0 0;
+      }
+
+      .search-empty.visible {
+        display: block;
+      }
+
       @media (max-width: 520px) {
+        .search-meta {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.35rem;
+        }
+
         .post-link {
           grid-template-columns: 1fr;
           grid-template-rows: auto auto auto;
@@ -128,9 +193,28 @@ const posts = (await getCollection('blog')).sort(
       {posts.length === 0 ? (
         <p class="empty-state">No posts yet — check back soon.</p>
       ) : (
-        <ul class="post-list">
+        <>
+          <div class="archive-tools">
+            <label class="search-label" for="writing-search">Search</label>
+            <input
+              id="writing-search"
+              class="search-input"
+              type="search"
+              placeholder="Search essays, notes, topics..."
+              autocomplete="off"
+            />
+            <div class="search-meta">
+              <p class="search-hint">Filter by title, description, or tags.</p>
+              <p class="search-count" id="search-count">{posts.length} posts</p>
+            </div>
+          </div>
+
+          <ul class="post-list" id="post-list">
           {posts.map((post) => (
-            <li class="post-item">
+            <li
+              class="post-item"
+              data-search={[post.data.title, post.data.description ?? '', ...(post.data.tags ?? [])].join(' ').toLowerCase()}
+            >
               <a href={`/blog/${post.id}/`} class="post-link">
                 <h2 class="post-title">{post.data.title}</h2>
                 {post.data.description && (
@@ -142,9 +226,36 @@ const posts = (await getCollection('blog')).sort(
               </a>
             </li>
           ))}
-        </ul>
+          </ul>
+          <p class="search-empty" id="search-empty">No writing matches that search.</p>
+        </>
       )}
     </main>
     <Footer />
+    {posts.length > 0 && (
+      <script>
+        const input = document.querySelector('#writing-search');
+        const items = Array.from(document.querySelectorAll('.post-item'));
+        const count = document.querySelector('#search-count');
+        const empty = document.querySelector('#search-empty');
+
+        const updateSearch = () => {
+          const query = input.value.trim().toLowerCase();
+          let visibleCount = 0;
+
+          items.forEach((item) => {
+            const haystack = item.dataset.search ?? '';
+            const matches = query === '' || haystack.includes(query);
+            item.style.display = matches ? '' : 'none';
+            if (matches) visibleCount += 1;
+          });
+
+          count.textContent = `${visibleCount} ${visibleCount === 1 ? 'post' : 'posts'}`;
+          empty.classList.toggle('visible', visibleCount === 0);
+        };
+
+        input.addEventListener('input', updateSearch);
+      </script>
+    )}
   </body>
 </html>
