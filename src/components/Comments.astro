@@ -1,0 +1,43 @@
+---
+/**
+ * Giscus Comment Component
+ *
+ * To fully enable Giscus, follow these steps:
+ * 1. Visit https://giscus.app/
+ * 2. Enter your repository (e.g., username/repo)
+ * 3. Copy the "data-repo-id" and "data-category-id"
+ * 4. Paste them into the placeholders below.
+ */
+---
+
+<section class="giscus-container">
+  <div class="giscus"></div>
+</section>
+
+<script
+  src="https://giscus.app/client.js"
+  data-repo="kartik0trivedi/THHT"
+  data-repo-id="R_kgDOR2JmAQ"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOR2JmAc4C5uGY"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="en"
+  crossorigin="anonymous"
+  async
+></script>
+
+<style>
+  .giscus-container {
+    padding-top: 3rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    max-width: var(--content-width);
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>

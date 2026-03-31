@@ -6,6 +6,7 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import TagList from '../components/TagList.astro';
+import Comments from '../components/Comments.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -140,6 +141,8 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
       <article class="prose">
         <slot />
       </article>
+
+      <Comments />
     </main>
     <Footer />
   </body>
