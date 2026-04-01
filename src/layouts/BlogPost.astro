@@ -7,10 +7,25 @@ import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import TagList from '../components/TagList.astro';
 import Comments from '../components/Comments.astro';
+import type { MarkdownHeading } from 'astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+  headings?: MarkdownHeading[];
+};
 
-const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  tags,
+  postType = 'standard',
+  headings = [],
+} = Astro.props;
+
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const showToc = postType === 'longform' && tocHeadings.length > 0;
 ---
 
 <html lang="en">
@@ -82,6 +97,66 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
         margin: 0 auto;
       }
 
+      .post-body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.5rem;
+      }
+
+      .post-body.longform {
+        grid-template-columns: minmax(0, 1fr) 260px;
+        align-items: start;
+      }
+
+      .toc {
+        position: sticky;
+        top: 6.5rem;
+        padding: 1rem 1.1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--paper);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .toc-title {
+        margin: 0 0 0.9rem;
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+      }
+
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .toc-list li + li {
+        margin-top: 0.55rem;
+      }
+
+      .toc-list a {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.92rem;
+        line-height: 1.45;
+        color: var(--ink-muted);
+        text-decoration: none;
+      }
+
+      .toc-list a:hover {
+        color: var(--ink);
+        text-decoration: none;
+      }
+
+      .toc-list .depth-3 {
+        padding-left: 0.9rem;
+        font-size: 0.88rem;
+      }
+
       /* Back link */
       .back-link {
         display: inline-flex;
@@ -102,6 +177,11 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 
       @media (max-width: 720px) {
         .post-title { font-size: 1.9rem; }
+        .post-body.longform { grid-template-columns: minmax(0, 1fr); }
+        .toc {
+          position: static;
+          order: -1;
+        }
       }
     </style>
   </head>
@@ -138,9 +218,29 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
         )}
       </header>
 
-      <article class="prose">
-        <slot />
-      </article>
+      <div class:list={['post-body', { longform: showToc }]}>
+        <article class="prose">
+          <slot />
+        </article>
+
+        {showToc && (
+          <aside class="toc" aria-label="Table of contents">
+            <h2 class="toc-title">Table of contents</h2>
+            <ol class="toc-list">
+              {tocHeadings.map((heading) => (
+                <li>
+                  <a
+                    href={`#${heading.slug}`}
+                    class:list={[`depth-${heading.depth}`]}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </aside>
+        )}
+      </div>
 
       <Comments />
     </main>

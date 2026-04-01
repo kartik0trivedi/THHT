@@ -3,6 +3,7 @@ title: "On the Tyranny of the Measurable"
 description: "We optimise for what we can count. The things we can't count quietly stop mattering."
 pubDate: "2026-03-15"
 tags: ["institutions", "ideas", "economics"]
+postType: "longform"
 ---
 
 There's a pattern that shows up everywhere. A school adopts a metric. Teachers optimise for it. The metric goes up. The thing the metric was supposed to represent stays flat, or gets worse. Everyone is confused.

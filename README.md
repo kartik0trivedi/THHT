@@ -40,9 +40,22 @@ Stop the dev server with **Ctrl + C**.
 
 ---
 
-## Writing a New Post
+## Writing Workflow
 
-Create a new `.md` file in `src/content/blog/`:
+Start from a template in `src/content/templates/`:
+
+```sh
+src/content/templates/standard.md
+src/content/templates/longform.md
+```
+
+Write drafts in `src/content/drafts/`:
+
+```sh
+src/content/drafts/your-post-slug.md
+```
+
+When ready to publish, move the file into:
 
 ```sh
 src/content/blog/your-post-slug.md
@@ -63,6 +76,13 @@ Your post content here in Markdown.
 
 The post will appear at `/blog/your-post-slug/` automatically.
 
+Post types:
+
+```yaml
+postType: "standard"   # default
+postType: "longform"   # adds a table of contents from headings
+```
+
 ---
 
 ## Project Structure
@@ -80,7 +100,9 @@ THHT/
 │   │   ├── FormattedDate.astro
 │   │   └── TagList.astro     # Tag pill component
 │   ├── content/
-│   │   └── blog/        # ← Your posts live here (.md or .mdx)
+│   │   ├── blog/        # Published posts
+│   │   ├── drafts/      # Unpublished posts, same schema as blog posts
+│   │   └── templates/   # Starter files for standard / longform posts
 │   ├── layouts/
 │   │   └── BlogPost.astro    # Post page layout
 │   ├── pages/
