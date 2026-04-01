@@ -7,6 +7,95 @@ import Layout from '../layouts/BlogPost.astro';
   description="A bit about Thinking Hard / Hardly Thinking and the person behind it."
   pubDate={new Date()}
 >
+  <style>
+    .contact-intro {
+      margin-bottom: 1rem;
+    }
+
+    .contact-form {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .contact-row {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .contact-field {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .contact-field label {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+    }
+
+    .contact-field input,
+    .contact-field textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--paper-warm);
+      color: var(--ink);
+      padding: 0.9rem 1rem;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .contact-field input:focus,
+    .contact-field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    .contact-field textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    .contact-note {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      color: var(--ink-muted);
+      margin: 0;
+    }
+
+    .contact-submit {
+      justify-self: start;
+      border: 0;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 999px;
+      padding: 0.8rem 1.2rem;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .contact-submit:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 640px) {
+      .contact-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
   <p>
     This is <strong>Thinking Hard / Hardly Thinking</strong> — a blog that exists somewhere between
     a public notebook and a thinking-out-loud session. Not every post will be polished.
@@ -28,8 +117,53 @@ import Layout from '../layouts/BlogPost.astro';
 
   <hr />
 
-  <p>
+  <p class="contact-intro">
     If you found something worth responding to, I'd genuinely like to hear from you.
-    You can reach me at <a href="mailto:kartik0trivedi@gmail.com">kartik0trivedi@gmail.com</a>.
   </p>
+
+  <form
+    class="contact-form"
+    action="https://formspree.io/f/xnjozavk"
+    method="POST"
+  >
+    <input type="hidden" name="_subject" value="New message from THHT" />
+
+    <div class="contact-row">
+      <div class="contact-field">
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" autocomplete="name" required />
+      </div>
+
+      <div class="contact-field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+      </div>
+    </div>
+
+    <div class="contact-field">
+      <label for="topic">What is this about?</label>
+      <input
+        id="topic"
+        name="topic"
+        type="text"
+        placeholder="A post, an idea, a correction, a question..."
+      />
+    </div>
+
+    <div class="contact-field">
+      <label for="message">Message</label>
+      <textarea
+        id="message"
+        name="message"
+        placeholder="Write whatever felt worth sending."
+        required
+      ></textarea>
+    </div>
+
+    <p class="contact-note">
+      This form sends through Formspree. Include your email if you'd like a reply.
+    </p>
+
+    <button class="contact-submit" type="submit">Send message</button>
+  </form>
 </Layout>
