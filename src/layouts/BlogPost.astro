@@ -9,7 +9,7 @@ import TagList from '../components/TagList.astro';
 import Comments from '../components/Comments.astro';
 import type { MarkdownHeading } from 'astro';
 
-type Props = CollectionEntry<'blog'>['data'] & {
+type Props = CollectionEntry<'writing'>['data'] & {
   headings?: MarkdownHeading[];
 };
 
@@ -189,7 +189,7 @@ const showToc = postType === 'longform' && tocHeadings.length > 0;
   <body>
     <Header />
     <main>
-      <a href="/blog" class="back-link">← All writing</a>
+      <a href="/writing" class="back-link">← All writing</a>
 
       {heroImage && (
         <div class="hero-image">

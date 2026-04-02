@@ -12,9 +12,9 @@ const basePostSchema = z.object({
 	postType: z.enum(['standard', 'longform']).default('standard'),
 });
 
-const blog = defineCollection({
-	// Load Markdown and MDX files in the `src/content/blog/` directory.
-	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
+const writing = defineCollection({
+	// Load Markdown and MDX files in the `src/content/writing/` directory.
+	loader: glob({ base: './src/content/writing', pattern: '**/*.{md,mdx}' }),
 	// Type-check frontmatter using a shared post schema.
 	schema: ({ image }) => basePostSchema.extend({
 		heroImage: z.optional(image()),
@@ -22,11 +22,11 @@ const blog = defineCollection({
 });
 
 const drafts = defineCollection({
-	// Drafts are type-checked but do not get site routes unless promoted into `blog/`.
+	// Drafts are type-checked but do not get site routes unless promoted into `writing/`.
 	loader: glob({ base: './src/content/drafts', pattern: '**/*.{md,mdx}' }),
 	schema: ({ image }) => basePostSchema.extend({
 		heroImage: z.optional(image()),
 	}),
 });
 
-export const collections = { blog, drafts };
+export const collections = { writing, drafts };

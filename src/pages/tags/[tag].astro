@@ -8,7 +8,7 @@ import TagList from '../../components/TagList.astro';
 import { SITE_TITLE } from '../../consts';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection('writing');
 
   // Collect all unique tags
   const tagSet = new Set<string>();
@@ -148,7 +148,7 @@ const { tag, posts } = Astro.props;
       <ul class="post-list">
         {posts.map((post) => (
           <li class="post-item">
-            <a href={`/blog/${post.id}/`} class="post-link">
+            <a href={`/writing/${post.id}/`} class="post-link">
               <h2 class="post-title">{post.data.title}</h2>
               {post.data.description && (
                 <p class="post-desc">{post.data.description}</p>

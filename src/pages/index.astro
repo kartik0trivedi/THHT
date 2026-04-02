@@ -6,9 +6,9 @@ import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-const posts = (await getCollection('blog'))
+const posts = (await getCollection('writing'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 5);
+  .slice(0, 3);
 ---
 
 <!doctype html>
@@ -162,7 +162,7 @@ const posts = (await getCollection('blog'))
         <ul class="post-list">
           {posts.map((post) => (
             <li class="post-item">
-              <a href={`/blog/${post.id}/`} class="post-link">
+              <a href={`/writing/${post.id}/`} class="post-link">
                 <h2 class="post-title">{post.data.title}</h2>
                 <span class="post-date">
                   <FormattedDate date={post.data.pubDate} />
@@ -173,7 +173,7 @@ const posts = (await getCollection('blog'))
         </ul>
       )}
 
-      <a href="/blog" class="view-all">All writing →</a>
+      <a href="/writing" class="view-all">All writing →</a>
     </main>
     <Footer />
   </body>

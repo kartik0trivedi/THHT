@@ -6,7 +6,7 @@ import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
-const posts = (await getCollection('blog')).sort(
+const posts = (await getCollection('writing')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
@@ -215,7 +215,7 @@ const posts = (await getCollection('blog')).sort(
               class="post-item"
               data-search={[post.data.title, post.data.description ?? '', ...(post.data.tags ?? [])].join(' ').toLowerCase()}
             >
-              <a href={`/blog/${post.id}/`} class="post-link">
+              <a href={`/writing/${post.id}/`} class="post-link">
                 <h2 class="post-title">{post.data.title}</h2>
                 {post.data.description && (
                   <p class="post-desc">{post.data.description}</p>
