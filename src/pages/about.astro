@@ -1,5 +1,5 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import Layout from "../layouts/BlogPost.astro";
 ---
 
 <Layout
@@ -48,7 +48,9 @@ import Layout from '../layouts/BlogPost.astro';
       font-family: var(--font-sans);
       font-size: 0.95rem;
       line-height: 1.5;
-      transition: border-color var(--transition), box-shadow var(--transition);
+      transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
     }
 
     .contact-field input:focus,
@@ -81,7 +83,9 @@ import Layout from '../layouts/BlogPost.astro';
       font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background var(--transition), transform var(--transition);
+      transition:
+        background var(--transition),
+        transform var(--transition);
     }
 
     .contact-submit:hover {
@@ -97,28 +101,33 @@ import Layout from '../layouts/BlogPost.astro';
   </style>
 
   <p>
-    This is <strong>Thinking Hard / Hardly Thinking</strong> — a blog that exists somewhere between
-    a public notebook and a thinking-out-loud session. Not every post will be polished.
-    Not every argument will be airtight. But everything here is written because it felt
-    worth saying out loud.
+    This is <strong>Thinking Hard / Hardly Thinking</strong> — a stack of ideas that
+    exists somewhere close to a public notebook with intent to avoid slop. Most of
+    the articles, will exist as living docs that will keep on evolving, with time
+    and inputs, and changes tracked on git. I am sure that most of the posts will
+    only start as semi-polished drafts. Not every argument will be airtight. But everything
+    here is written because it felt worth saying out loud.
   </p>
 
   <p>
-    The title is a joke that stopped being funny halfway through, which felt appropriate
-    for a blog about ideas. Sometimes I'm thinking very hard. Sometimes I'm hardly thinking.
-    Usually I'm somewhere in between, trying to figure out which one it is.
+    There is no grand story behind how I landed on this name. I was washing
+    dishes, and just muttered to my wife - "You know what, Thinking Hard /
+    Hardly Thinking seems like a good name for blog". She agreed. Thinking hard
+    part of the name is about giving deep thought to the subject, and the Hardly
+    Thinking part represents the margins of the idea that often gets overlooked.
   </p>
 
   <p>
-    Topics might include whatever I'm reading, researching, or confused about — and
-    I expect that range to wander. If something regularly pulls me in, it will
-    probably end up here.
+    Topics might include whatever I'm reading, researching, or confused about —
+    and I expect that range to wander. Order should might present itself
+    naturally.
   </p>
 
   <hr />
 
   <p class="contact-intro">
-    If you found something worth responding to, I'd genuinely like to hear from you.
+    If you found something worth responding to, I'd genuinely like to hear from
+    you.
   </p>
 
   <form
@@ -136,7 +145,13 @@ import Layout from '../layouts/BlogPost.astro';
 
       <div class="contact-field">
         <label for="email">Email</label>
-        <input id="email" name="email" type="email" autocomplete="email" required />
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+        />
       </div>
     </div>
 
@@ -156,12 +171,12 @@ import Layout from '../layouts/BlogPost.astro';
         id="message"
         name="message"
         placeholder="Write whatever felt worth sending."
-        required
-      ></textarea>
+        required></textarea>
     </div>
 
     <p class="contact-note">
-      This form sends through Formspree. Include your email if you'd like a reply.
+      This form sends through Formspree. Include your email if you'd like a
+      reply.
     </p>
 
     <button class="contact-submit" type="submit">Send message</button>
