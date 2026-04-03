@@ -7,6 +7,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import TagList from '../components/TagList.astro';
 import Comments from '../components/Comments.astro';
+import Subscribe from '../components/Subscribe.astro';
 import type { MarkdownHeading } from 'astro';
 
 type Props = CollectionEntry<'writing'>['data'] & {
@@ -241,6 +242,8 @@ const showToc = postType === 'longform' && tocHeadings.length > 0;
           </aside>
         )}
       </div>
+
+      <Subscribe />
 
       <Comments />
     </main>

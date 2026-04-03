@@ -1,0 +1,138 @@
+---
+
+---
+
+<section class="subscribe-section">
+  <div class="subscribe-container">
+    <div class="subscribe-content">
+      <h2 class="subscribe-title">Get the next TH/HT in your inbox</h2>
+      <p class="subscribe-desc">
+        Join the mailing list to receive new writing in your inbox. No spam,
+        just ideas.
+      </p>
+    </div>
+    <form
+      action="https://api.follow.it/subscription-form/WE5MVjJONU1aajUxcm94YnM0NERpNlVEZ3dUYkZlOWszNlZOR3RFY3JhakhldHBHcGtNeis3Rnh1RDRyMUdOZUlZc1VsMFMwS01PdGJQZUlmd0Uwc0lvaVNseGVYQW5zZCs0TTJvWlJBWU1CeVl0UjFPTk1tMzdub0ZnQm9WT1p8cmY1SHZjdjdIdWFkbit3WWNnOFoxSkYrYmIxbkNLb1crc0ttQ1BUT1RiTT0=/8"
+      method="post"
+      class="subscribe-form"
+    >
+      <div class="input-group">
+        <input
+          type="email"
+          name="email"
+          placeholder="your@email.com"
+          required
+          aria-label="Email address"
+          class="subscribe-input"
+        />
+        <button type="submit" class="subscribe-button"> Subscribe </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+  .subscribe-section {
+    margin: 4rem 0;
+    padding: 3rem 2rem;
+    background-color: var(--paper-warm);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .subscribe-container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .subscribe-content {
+    margin-bottom: 2rem;
+  }
+
+  .subscribe-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .subscribe-desc {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    max-width: 450px;
+    margin: 0 auto;
+  }
+
+  .subscribe-form {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+  }
+
+  .input-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .subscribe-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--paper);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: var(--ink);
+    transition:
+      border-color var(--transition),
+      box-shadow var(--transition);
+  }
+
+  .subscribe-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+  }
+
+  .subscribe-button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--transition),
+      transform 0.1s ease;
+  }
+
+  .subscribe-button:hover {
+    background-color: var(--ink-muted);
+  }
+
+  .subscribe-button:active {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 520px) {
+    .subscribe-section {
+      padding: 2.5rem 1.5rem;
+      margin: 3rem 0;
+    }
+
+    .input-group {
+      flex-direction: column;
+    }
+
+    .subscribe-button {
+      width: 100%;
+    }
+  }
+</style>
