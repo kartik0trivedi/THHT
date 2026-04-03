@@ -8,9 +8,9 @@ const parser = new MarkdownIt();
 
 export async function GET(context) {
 	const posts = await getCollection('writing');
-	
+
 	// Create a threshold date (now - 2 days)
-	const DELAY_IN_DAYS = 2;
+	const DELAY_IN_DAYS = 0;
 	const thresholdDate = new Date();
 	thresholdDate.setDate(thresholdDate.getDate() - DELAY_IN_DAYS);
 
