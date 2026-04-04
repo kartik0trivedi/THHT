@@ -13,19 +13,14 @@
     </div>
 
     <!-- Success/Error Messages -->
-    <div data-fs-success class="form-feedback success">
+    <div id="subscribe-success" class="form-feedback success">
       Thank you! You've been subscribed.
     </div>
-    <div data-fs-error class="form-feedback error">
+    <div id="subscribe-error" class="form-feedback error">
       Oops! Something went wrong. Please try again.
     </div>
 
-    <form
-      id="subscribe-form"
-      action="https://formspree.io/f/mvzvwrrp"
-      method="POST"
-      class="subscribe-form"
-    >
+    <form id="subscribe-form" class="subscribe-form">
       <div class="input-group">
         <input
           type="email"
@@ -34,23 +29,51 @@
           required
           aria-label="Email address"
           class="subscribe-input"
-          data-fs-field
         />
-        <button type="submit" class="subscribe-button" data-fs-submit-btn>
+        <button type="submit" id="subscribe-btn" class="subscribe-button">
           Subscribe
         </button>
       </div>
-      <span data-fs-error="email" class="field-error"></span>
     </form>
   </div>
 </section>
 
 <script is:inline>
-  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
-  formspree('initForm', { formElement: '#subscribe-form', formId: 'mvzvwrrp' });
-</script>
-<script src="https://unpkg.com/@formspree/ajax@1" defer is:inline></script>
+  const form = document.getElementById("subscribe-form");
+  const btn = document.getElementById("subscribe-btn");
+  const successMsg = document.getElementById("subscribe-success");
+  const errorMsg = document.getElementById("subscribe-error");
 
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      btn.disabled = true;
+      btn.textContent = "Subscribing...";
+      successMsg.style.display = "none";
+      errorMsg.style.display = "none";
+
+      try {
+        const response = await fetch("/api/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: form.email.value }),
+        });
+
+        if (!response.ok) throw new Error("Server error");
+
+        successMsg.style.display = "block";
+        form.reset();
+      } catch (error) {
+        console.error("Subscription error:", error);
+        errorMsg.style.display = "block";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Subscribe";
+      }
+    });
+  }
+</script>
 
 <style>
   .subscribe-section {
@@ -61,7 +84,7 @@
     border-radius: 12px;
   }
 
-  /* Formspree Feedback Styles */
+  /* Feedback Styles */
   .form-feedback {
     display: none;
     font-family: var(--font-sans);
@@ -75,7 +98,8 @@
   }
 
   /* Formspree library toggles display automatically */
-  [data-fs-success], [data-fs-error] {
+  [data-fs-success],
+  [data-fs-error] {
     display: none;
   }
 
@@ -101,7 +125,6 @@
   }
 
   .subscribe-container {
-
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
