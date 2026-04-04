@@ -20,59 +20,60 @@ My goals for the migration were simple:
 2. Keep the existing AJAX-based submission (no clunky page reloads).
 3. Preserve the site's "paper-warm" aesthetic and UI feedback.
 
-## The Initial Setup: Google Sheets and AJAX
+## The Initial Setup: Google Sheets as a Backend
 
-Google Apps Script makes it surprisingly easy to turn a spreadsheet into an API. I created a small script to act as the backend for the form:
+Google Apps Script makes it surprisingly easy to turn a spreadsheet into something that can receive data from the web. The excellent guide by [Levi Nunnink](https://github.com/levinunnink/html-form-to-google-sheet) covers the core setup well — the short version is:
+
+1. Create a Google Sheet with column headers (e.g. `Email`, `Date`).
+2. Open **Extensions → Apps Script** from the sheet and paste in a script that handles incoming form data.
+3. Deploy the script as a **Web App** (set to run as you, accessible by anyone).
+4. Copy the deployment URL — this is the endpoint your form will `POST` to.
+
+The script itself listens for incoming data and appends it as a new row. Here is the one I used:
 
 ```javascript
 function doPost(e) {
   try {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
     
-    // Parse the incoming JSON data from the website
     const data = JSON.parse(e.postData.contents);
     const email = data.email;
-    const dateAdded = new Date(); // System-generated date and time
+    const dateAdded = new Date();
 
-    // Validation: Don't add empty rows
     if (!email || email.trim() === "") {
       throw new Error("Email field is missing or empty.");
     }
 
-    // Append only Email and Date
     sheet.appendRow([email, dateAdded]);
 
-    return ContentService.createTextOutput(JSON.stringify({ "result": "success", "message": "Subscribed successfully" }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(
+      JSON.stringify({ "result": "success" })
+    ).setMimeType(ContentService.MimeType.JSON);
       
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "message": error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(
+      JSON.stringify({ "result": "error", "message": error.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
   }
 }
 ```
 
-On the frontend, I updated the Astro component (`Subscribe.astro`) to use a native JavaScript `fetch` call instead of Formspree's library.
+On the frontend, I updated the Astro component to use a native JavaScript `fetch` call — this sends the form data to the Apps Script URL in the background without reloading the page.
 
 ```js
-const form = document.getElementById("subscribe-form");
 const scriptURL = "https://script.google.com/macros/s/AKfycbz.../exec";
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  
-  const data = { email: form.email.value };
 
   try {
     await fetch(scriptURL, {
       method: "POST",
-      mode: "no-cors", // Standard for Apps Script to avoid pre-flight issues
-      cache: "no-cache",
-      headers: { "Content-Type": "text/plain" }, // Avoids CORS pre-flight
-      body: JSON.stringify(data),
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ email: form.email.value }),
     });
-    
-    // "no-cors" means we can't read the response body, so we assume success if no error was thrown
+
     successMsg.style.display = "block";
     form.reset();
   } catch (error) {
@@ -81,23 +82,29 @@ form.addEventListener("submit", async (e) => {
 });
 ```
 
-A key design decision here: I used `mode: "no-cors"` and `Content-Type: "text/plain"`. Because the Apps Script is hosted on a different domain (`script.google.com`), a standard `application/json` request would trigger a CORS pre-flight check that Apps Script doesn't natively handle well. Sending plain text circumvents this entirely, and the Apps Script still successfully parses the JSON string.
+There is a quirk worth explaining here: `mode: "no-cors"` and `Content-Type: "text/plain"`. Browsers enforce a rule called **CORS** (Cross-Origin Resource Sharing) that restricts how a page on one domain can talk to a server on another. When a browser wants to send JSON to an external URL, it first sends a "pre-flight" check asking the server: *are you okay with this?* Google Apps Script does not respond to that check in the way browsers expect, so the request fails before it even starts. The workaround is to send plain text instead — this type of request is considered simple enough that the browser skips the pre-flight entirely. The Apps Script still receives and parses the JSON string correctly; it just arrives as plain text rather than a declared JSON payload.
+
+The trade-off with `no-cors` is that the browser hides the server's response from your JavaScript. You cannot tell if the submission actually succeeded — you can only tell if the network request itself failed. So I defaulted to showing a success message if no error was thrown, which is not ideal but acceptable for a low-stakes mailing list form.
 
 ## The Security Problem
 
-The setup worked perfectly, but it created a new issue. The `scriptURL` was sitting in plain sight.
+The setup worked, but it created a new issue. The `scriptURL` was sitting in the JavaScript source, visible to anyone who opened the browser's developer tools and looked at the page source.
 
-The URL is not the Google Sheet ID itself — the sheet stays protected behind Google's authentication. But the Apps Script endpoint is a public-facing URL that accepts `POST` requests. Anyone who found it in the source code could write a script to spam it with fake emails and flood the sheet. That felt worth fixing.
+The URL is not the Google Sheet ID — the sheet stays protected behind Google's authentication. But the Apps Script endpoint is a public-facing URL that accepts `POST` requests from anywhere. Anyone who found it could write a script to spam it with thousands of fake emails and flood the sheet. That felt worth fixing.
 
-## Why `.env` alone doesn't solve this
+## Why `.env` Alone Does Not Solve This
 
-The instinct is to move the URL into a `.env` file. Astro supports this via `PUBLIC_` prefixed variables — but they get **inlined into the JavaScript bundle at build time**. The browser still receives the value; it's just one step more obscure. For a purely static site with no server, there is nowhere else to put it.
+The natural first instinct is to move the URL into a `.env` file. These files are a common convention for storing configuration and secrets locally — they sit in the project folder but are excluded from version control via `.gitignore`, so they never get committed to GitHub. That part is useful.
 
-The only real solution is to keep the URL on a server.
+The problem is what happens at build time. Astro supports exposing `.env` variables to the browser via a `PUBLIC_` prefix, but that works by **inlining the value directly into the compiled JavaScript** during the build step. The resulting bundle that gets deployed — and served to every visitor — contains the URL in plain text. Moving it to `.env` tidies up the source code, but the deployed output is identical. A slightly more determined person with DevTools would find it just as easily.
 
-## The fix: a Vercel serverless function
+The only way to truly hide a value from the browser is to never send it to the browser in the first place. That means keeping it on a server.
 
-Astro's default output is static, but the Vercel adapter lets you opt individual routes into server rendering. This means the rest of the site stays fast and fully static while one endpoint runs as a serverless function.
+## The Fix: a Vercel Serverless Function
+
+A serverless function is code that runs on a server on demand, without you having to manage that server yourself. Vercel, where this site is hosted, can run serverless functions alongside a static site — and the free Hobby plan includes enough headroom (100,000 invocations per month) that a personal newsletter form will never come close to a limit.
+
+Astro's default output is static, but the Vercel adapter lets individual routes opt into server-side rendering. The rest of the site stays fast and fully static; one small endpoint runs as a serverless function.
 
 ### 1. Install the Vercel adapter
 
@@ -105,11 +112,11 @@ Astro's default output is static, but the Vercel adapter lets you opt individual
 npx astro add vercel
 ```
 
-This updates `astro.config.mjs` to include the adapter. No `output` mode change is needed — Astro v5+ defaults to static and lets individual files opt in to server rendering.
+This adds the adapter to `astro.config.mjs`. No other config change is needed — Astro v5+ defaults to static output and lets individual files opt in.
 
 ### 2. Create the API endpoint
 
-`src/pages/api/subscribe.ts`:
+Create `src/pages/api/subscribe.ts`. This file becomes the serverless function:
 
 ```ts
 export const prerender = false;
@@ -139,19 +146,19 @@ export async function POST({ request }: { request: Request }) {
 }
 ```
 
-`export const prerender = false` is the only line needed to tell Vercel to run this as a serverless function rather than generate a static file. The `APPS_SCRIPT_URL` environment variable is read at runtime on the server — it never touches the browser.
+`export const prerender = false` is the single line that tells Astro and Vercel to treat this route as a server-side function rather than a static file. The `APPS_SCRIPT_URL` variable is read at runtime, on Vercel's servers — it is never included in anything sent to the browser.
 
-### 3. Store the URL in `.env`
+### 3. Store the URL locally in `.env`
 
 ```env
 APPS_SCRIPT_URL=https://script.google.com/macros/s/.../exec
 ```
 
-`.env` is gitignored, so this never ends up in the repository.
+This file lives in your project folder for local development but is listed in `.gitignore`, so it is never committed. When running `npm run dev`, Astro reads it automatically.
 
 ### 4. Update the form
 
-The client-side script now posts to `/api/subscribe` instead of directly to Google:
+The client-side script now posts to `/api/subscribe` — the same domain as the site — instead of directly to Google:
 
 ```js
 const response = await fetch("/api/subscribe", {
@@ -163,23 +170,29 @@ const response = await fetch("/api/subscribe", {
 if (!response.ok) throw new Error("Server error");
 ```
 
-Because this is a same-origin request, there is no CORS issue and no need for `mode: "no-cors"`. It also means the response can be properly checked — the old `no-cors` approach had to assume success since the browser would suppress the response body.
+Because the form and the API endpoint are on the same domain, the browser's CORS rules do not apply, and `mode: "no-cors"` is no longer needed. This also means the response can be read properly — the function returns a clear `ok: true` or an error, rather than the previous approach of hoping for the best.
 
 ### 5. Add the environment variable to Vercel
 
-In the Vercel dashboard, go to **Project → Settings → Environment Variables** and add `APPS_SCRIPT_URL` with the Apps Script URL as its value. Vercel injects this at runtime into the serverless function — it never appears in the build output or the deployed JavaScript.
+For local development, the `.env` file is enough. For production, Vercel needs to know the value independently. In the Vercel dashboard, go to **Project → Settings → Environment Variables** and add:
+
+- **Key**: `APPS_SCRIPT_URL`
+- **Value**: the full Apps Script deployment URL
+- **Environment**: Production
+
+Vercel injects this at runtime into the serverless function. It never appears in the build output or the deployed JavaScript.
 
 ## Verification
 
 Two quick checks after deploying:
 
-1. Open DevTools → Network and submit the form. The request should go to `/api/subscribe`, not `script.google.com`.
-2. Search the page source (`Cmd+U`) for `script.google.com`. It should not appear.
+1. Open DevTools → **Network** and submit the form. The request should go to `/api/subscribe`, not `script.google.com`.
+2. View the page source (`Cmd+U`) and search for `script.google.com`. It should not appear.
 
 The Vercel dashboard also lists `api/subscribe` under the **Functions** tab, confirming it deployed as a serverless function rather than a static file.
 
-## What this actually protects
+## What This Actually Protects
 
-The Apps Script URL is now only known to Vercel's runtime environment. A bad actor inspecting the page source or the network traffic will see requests to `/api/subscribe` on the same domain — a dead end without the underlying URL. The sheet itself was never at risk, but the endpoint is no longer trivially abusable from a browser console.
+The Apps Script URL is now only known to Vercel's runtime environment. Anyone inspecting the page source or watching network traffic will see requests going to `/api/subscribe` on the same domain — a dead end without the underlying URL. The Google Sheet itself was never at risk, but the endpoint is no longer trivially abusable from a browser console.
 
 A small change, but a cleaner setup.
