@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TH/HT — Newsletter Sender</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: #faf9f7;
+      color: #1a1a1a;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top bar */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 24px;
+      border-bottom: 1px solid #e8e4de;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    header img { height: 32px; width: auto; }
+    header h1 {
+      font-family: Georgia, serif;
+      font-size: 16px;
+      font-weight: normal;
+      color: #1a1a1a;
+    }
+    header span {
+      font-size: 12px;
+      color: #999;
+      margin-left: auto;
+      font-style: italic;
+    }
+
+    /* Layout */
+    .workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Left panel */
+    .panel {
+      width: 340px;
+      flex-shrink: 0;
+      border-right: 1px solid #e8e4de;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .panel-section {
+      padding: 20px 24px;
+      border-bottom: 1px solid #f0ece6;
+    }
+    .panel-section:last-child { border-bottom: none; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    select, input[type="text"], input[type="datetime-local"] {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #e8e4de;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      color: #1a1a1a;
+      background: #faf9f7;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    select:focus, input:focus { border-color: #c0392b; }
+
+    .char-count {
+      text-align: right;
+      font-size: 11px;
+      color: #bbb;
+      margin-top: 5px;
+    }
+    .char-count.warn { color: #e67e22; }
+    .char-count.over { color: #c0392b; }
+
+    /* Schedule toggle */
+    .toggle-row {
+      display: flex;
+      gap: 0;
+      border: 1px solid #e8e4de;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .toggle-row button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: #faf9f7;
+      font-family: inherit;
+      font-size: 13px;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .toggle-row button.active {
+      background: #1a1a1a;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .schedule-fields { display: none; }
+    .schedule-fields.visible { display: block; }
+
+    /* Send button */
+    .send-btn {
+      width: 100%;
+      padding: 12px;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .send-btn:hover:not(:disabled) { background: #333; }
+    .send-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* Status */
+    .status {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .status.success {
+      display: block;
+      background: rgba(46, 204, 113, 0.08);
+      color: #2e7d32;
+      border: 1px solid rgba(46, 204, 113, 0.25);
+    }
+    .status.error {
+      display: block;
+      background: rgba(192, 57, 43, 0.08);
+      color: #c0392b;
+      border: 1px solid rgba(192, 57, 43, 0.2);
+    }
+
+    /* Preview pane */
+    .preview {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f0ece6;
+    }
+    .preview-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: #f0ece6;
+      border-bottom: 1px solid #e8e4de;
+      flex-shrink: 0;
+    }
+    .preview-bar span {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #999;
+    }
+    .preview-bar a {
+      font-size: 12px;
+      color: #c0392b;
+      text-decoration: none;
+    }
+    .preview-bar a:hover { text-decoration: underline; }
+
+    iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+    }
+
+    .empty-preview {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbb;
+      font-size: 14px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="https://www.thht.in/_astro/thht-logo.zpB2MduO_Z96otW.svg" alt="TH/HT">
+  <h1>Newsletter Sender</h1>
+  <span>local only</span>
+</header>
+
+<div class="workspace">
+
+  <!-- Left panel -->
+  <aside class="panel">
+
+    <div class="panel-section">
+      <label for="post-select">Post</label>
+      <select id="post-select">
+        <option value="">— select a post —</option>
+      </select>
+    </div>
+
+    <div class="panel-section">
+      <label for="subject">Subject line</label>
+      <input type="text" id="subject" placeholder="e.g. Who reads blogs anymore?" maxlength="80">
+      <div class="char-count" id="subject-count">0 / 60</div>
+
+      <div style="margin-top: 16px;">
+        <label for="preheader">Preheader</label>
+        <input type="text" id="preheader" placeholder="e.g. Not me. And yet, here we are." maxlength="120">
+        <div class="char-count" id="preheader-count">0 / 100</div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <label>Send timing</label>
+      <div class="toggle-row">
+        <button id="btn-now" class="active" onclick="setMode('now')">Send now</button>
+        <button id="btn-schedule" onclick="setMode('schedule')">Schedule</button>
+      </div>
+      <div class="schedule-fields" id="schedule-fields">
+        <label for="schedule-time">Date &amp; time</label>
+        <input type="datetime-local" id="schedule-time">
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <button class="send-btn" id="send-btn" onclick="send()" disabled>Send campaign</button>
+      <div class="status" id="status"></div>
+    </div>
+
+  </aside>
+
+  <!-- Right panel: preview -->
+  <main class="preview" id="preview-pane">
+    <div class="preview-bar">
+      <span>Preview</span>
+      <a href="#" id="open-preview" target="_blank" style="display:none;">Open in new tab ↗</a>
+    </div>
+    <div class="empty-preview" id="empty-msg">Select a post to preview</div>
+    <iframe id="preview-frame" style="display:none;"></iframe>
+  </main>
+
+</div>
+
+<script>
+  let currentSlug = '';
+  let sendMode = 'now';
+  let previewDebounce = null;
+
+  // Load posts
+  fetch('/api/posts')
+    .then(r => r.json())
+    .then(posts => {
+      const sel = document.getElementById('post-select');
+      posts.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.slug;
+        opt.textContent = p.title;
+        sel.appendChild(opt);
+      });
+    });
+
+  document.getElementById('post-select').addEventListener('change', e => {
+    currentSlug = e.target.value;
+    if (!currentSlug) {
+      showEmpty();
+      return;
+    }
+    // Auto-fill subject from post title
+    const title = e.target.options[e.target.selectedIndex].textContent;
+    if (!document.getElementById('subject').value) {
+      document.getElementById('subject').value = title;
+      updateCharCount('subject', 60);
+    }
+    document.getElementById('send-btn').disabled = false;
+    refreshPreview();
+  });
+
+  document.getElementById('subject').addEventListener('input', () => updateCharCount('subject', 60));
+
+  document.getElementById('preheader').addEventListener('input', () => {
+    updateCharCount('preheader', 100);
+    clearTimeout(previewDebounce);
+    previewDebounce = setTimeout(refreshPreview, 400);
+  });
+
+  function updateCharCount(field, ideal) {
+    const input = document.getElementById(field);
+    const counter = document.getElementById(`${field}-count`);
+    const len = input.value.length;
+    const max = parseInt(input.getAttribute('maxlength'));
+    counter.textContent = `${len} / ${ideal}`;
+    counter.className = 'char-count' + (len > max ? ' over' : len > ideal ? ' warn' : '');
+  }
+
+  function setMode(mode) {
+    sendMode = mode;
+    document.getElementById('btn-now').classList.toggle('active', mode === 'now');
+    document.getElementById('btn-schedule').classList.toggle('active', mode === 'schedule');
+    document.getElementById('schedule-fields').classList.toggle('visible', mode === 'schedule');
+  }
+
+  function refreshPreview() {
+    if (!currentSlug) return;
+    const preheader = encodeURIComponent(document.getElementById('preheader').value);
+    const url = `/api/preview/${currentSlug}?preheader=${preheader}`;
+    const frame = document.getElementById('preview-frame');
+    const empty = document.getElementById('empty-msg');
+    const openLink = document.getElementById('open-preview');
+    frame.src = url;
+    frame.style.display = 'block';
+    empty.style.display = 'none';
+    openLink.href = url;
+    openLink.style.display = 'inline';
+  }
+
+  function showEmpty() {
+    document.getElementById('preview-frame').style.display = 'none';
+    document.getElementById('empty-msg').style.display = 'flex';
+    document.getElementById('open-preview').style.display = 'none';
+    document.getElementById('send-btn').disabled = true;
+  }
+
+  async function send() {
+    const subject = document.getElementById('subject').value.trim();
+    const preheader = document.getElementById('preheader').value.trim();
+    const scheduleISO = sendMode === 'schedule'
+      ? document.getElementById('schedule-time').value
+      : null;
+
+    if (!subject) { showStatus('error', 'Subject line is required.'); return; }
+    if (sendMode === 'schedule' && !scheduleISO) { showStatus('error', 'Pick a date and time to schedule.'); return; }
+
+    const btn = document.getElementById('send-btn');
+    btn.disabled = true;
+    btn.textContent = sendMode === 'schedule' ? 'Scheduling…' : 'Sending…';
+    clearStatus();
+
+    try {
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: currentSlug, subject, preheader, scheduleISO }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        const msg = sendMode === 'schedule'
+          ? `Scheduled. Status: ${data.status}`
+          : `Sent. Status: ${data.status}`;
+        showStatus('success', msg);
+      } else {
+        showStatus('error', data.error || 'Something went wrong.');
+      }
+    } catch (err) {
+      showStatus('error', err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send campaign';
+    }
+  }
+
+  function showStatus(type, msg) {
+    const el = document.getElementById('status');
+    el.className = `status ${type}`;
+    el.textContent = msg;
+  }
+  function clearStatus() {
+    const el = document.getElementById('status');
+    el.className = 'status';
+    el.textContent = '';
+  }
+</script>
+
+</body>
+</html>

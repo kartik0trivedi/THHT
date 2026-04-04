@@ -23,7 +23,14 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# custom newsletter template (not for git)
-newsletter/
+# newsletter — ignore campaign outputs and assets, keep app code
+newsletter/*.md
+newsletter/*.html
+newsletter/*.png
+newsletter/*.jpg
+newsletter/*.jpeg
+newsletter/*.gif
+newsletter/*.webp
+newsletter/*.svg
 
 .vercel

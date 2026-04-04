@@ -1,0 +1,103 @@
+---
+export const prerender = false;
+import { getCollection, render } from 'astro:content';
+
+const { slug } = Astro.params;
+const preheader = Astro.url.searchParams.get('preheader') || '';
+
+const posts = await getCollection('writing');
+const post = posts.find(p => p.id === slug);
+
+if (!post) return new Response('Not found', { status: 404 });
+
+const { Content } = await render(post);
+const title = post.data.title;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title} | TH/HT</title>
+  <style is:inline>
+    body { margin:0; padding:0; min-width:100%; background-color:#faf9f7; font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Arial,sans-serif; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+    table { border-spacing:0; font-family:Georgia,'Times New Roman',serif; color:#1a1a1a; }
+    td { padding:0; }
+    img { border:0; display:block; }
+    h1 { font-size:28px; line-height:1.25; margin-top:10px; margin-bottom:20px; color:#1a1a1a; }
+    h2 { font-size:20px; line-height:1.3; margin-top:32px; margin-bottom:12px; color:#1a1a1a; }
+    p { font-size:17px; line-height:1.75; margin-top:0; margin-bottom:20px; color:#3d3d3d; }
+    a { color:#c0392b; }
+    em { font-style:italic; }
+    hr { border:none; border-top:1px solid #e8e4de; margin:32px 0; }
+    .accent { color:#c0392b; font-family:-apple-system,Arial,sans-serif; font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+    .btn { background-color:#1a1a1a; color:#ffffff !important; text-decoration:none; padding:12px 24px; border-radius:6px; display:inline-block; font-family:-apple-system,Arial,sans-serif; font-size:15px; font-weight:600; }
+    .footer-p { font-size:12px !important; color:#6b6b6b !important; margin-bottom:8px; line-height:1.5; }
+    @media screen and (max-width:600px) { .main { width:100% !important; } h1 { font-size:24px !important; } p { font-size:16px !important; } }
+  </style>
+</head>
+<body>
+  {preheader && (
+    <span style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
+      {preheader}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+    </span>
+  )}
+
+  <div style="width:100%;table-layout:fixed;background-color:#faf9f7;padding-bottom:40px;">
+
+    <table width="100%" cellspacing="0" cellpadding="0">
+      <tr>
+        <td style="padding:15px 0;" align="center">
+          <p style="font-family:-apple-system,Arial,sans-serif;font-size:11px;margin:0;color:#6b6b6b;">
+            Trouble viewing? <a style="color:#6b6b6b;" href={`https://thht.in/writing/${slug}`}>Read it on the web</a>.
+          </p>
+        </td>
+      </tr>
+    </table>
+
+    <table class="main" cellspacing="0" cellpadding="0" align="center"
+      style="background-color:#ffffff;margin:0 auto;width:100%;max-width:600px;border-spacing:0;font-family:Georgia,'Times New Roman',serif;color:#1a1a1a;border:1px solid #e8e4de;">
+      <tr>
+        <td style="padding:40px 40px 30px 40px;text-align:center;border-bottom:1px solid #e8e4de;">
+          <a href="https://thht.in" style="text-decoration:none;">
+            <img src="https://www.thht.in/_astro/thht-logo.zpB2MduO_Z96otW.svg"
+              width="150" height="84" alt="Thinking Hard / Hardly Thinking"
+              style="display:block;margin:0 auto;">
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:40px;">
+          <span class="accent">Latest Writing</span>
+          <h1>{title}</h1>
+          <Content />
+          <hr>
+          <table width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;">
+            <tr>
+              <td>
+                <a href={`https://thht.in/writing/${slug}`} class="btn">Read on the web →</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <table cellspacing="0" cellpadding="0" align="center"
+      style="width:100%;max-width:600px;margin:0 auto;text-align:center;padding:30px 20px;font-family:-apple-system,Arial,sans-serif;">
+      <tr>
+        <td>
+          <p class="footer-p"><em>Thinking Hard / Hardly Thinking — Ideas worth muddling through.</em></p>
+          <p class="footer-p">You are receiving this because you signed up at <a href="https://thht.in" style="color:#6b6b6b;">thht.in</a>.</p>
+          <p class="footer-p">
+            <a href="$[LI:UNSUBSCRIBE]$" style="color:#6b6b6b;">Unsubscribe</a>
+            &nbsp;|&nbsp;
+            <a href="$[LI:SUB_PREF]$" style="color:#6b6b6b;">Preferences</a>
+          </p>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+</body>
+</html>
