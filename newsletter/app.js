@@ -170,7 +170,7 @@ app.post('/api/send', async (req, res) => {
       campaignname: subject,
       from_email: process.env.ZOHO_FROM_EMAIL,
       subject,
-      list_details: JSON.stringify([{ listkey: process.env.ZOHO_LIST_KEY, segmentid: '0' }]),
+      list_details: JSON.stringify({ listkey: process.env.ZOHO_LIST_KEY, segmentid: '0' }),
       content_url: contentURL,
       resfmt: 'JSON',
     });
