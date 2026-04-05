@@ -9,7 +9,7 @@ const basePostSchema = z.object({
 	pubDate: z.coerce.date(),
 	updatedDate: z.coerce.date().optional(),
 	tags: z.array(z.string()).optional(),
-	postType: z.enum(['standard', 'longform']).default('standard'),
+	toc: z.boolean().default(false),
 });
 
 const writing = defineCollection({

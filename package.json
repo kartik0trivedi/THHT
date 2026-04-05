@@ -16,9 +16,13 @@
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "@astrojs/vercel": "^10.0.4",
+    "@resvg/resvg-js": "^2.6.2",
     "astro": "^6.1.2",
     "markdown-it": "^14.1.1",
+    "mdast-util-to-string": "^4.0.0",
+    "reading-time": "^1.5.0",
     "sanitize-html": "^2.17.2",
+    "satori": "^0.26.0",
     "sharp": "^0.34.3"
   }
 }

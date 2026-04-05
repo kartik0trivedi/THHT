@@ -12,6 +12,9 @@ import type { MarkdownHeading } from 'astro';
 
 type Props = CollectionEntry<'writing'>['data'] & {
   headings?: MarkdownHeading[];
+  readingTime?: string;
+  id?: string;
+  showComments?: boolean;
 };
 
 const {
@@ -21,17 +24,21 @@ const {
   updatedDate,
   heroImage,
   tags,
-  postType = 'standard',
+  toc = false,
+  readingTime,
+  id,
   headings = [],
+  showComments = true,
 } = Astro.props;
 
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
-const showToc = postType === 'longform' && tocHeadings.length > 0;
+const showToc = toc && tocHeadings.length > 0;
+const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
 ---
 
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead title={title} description={description} image={ogImage} />
     <style>
       .post-header {
         padding: 3.5rem 0 2.5rem;
@@ -176,6 +183,35 @@ const showToc = postType === 'longform' && tocHeadings.length > 0;
         text-decoration: none;
       }
 
+      /* Code block copy button */
+      .copy-code {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--paper);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 4px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity var(--transition), background var(--transition);
+      }
+
+      .prose pre {
+        position: relative;
+      }
+
+      .prose pre:hover .copy-code {
+        opacity: 1;
+      }
+
+      .copy-code:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
       @media (max-width: 720px) {
         .post-title { font-size: 1.9rem; }
         .post-body.longform { grid-template-columns: minmax(0, 1fr); }
@@ -201,6 +237,12 @@ const showToc = postType === 'longform' && tocHeadings.length > 0;
       <header class="post-header">
         <div class="post-meta">
           <span class="post-date"><FormattedDate date={pubDate} /></span>
+          {readingTime && (
+            <>
+              <span class="meta-sep">·</span>
+              <span class="post-date">{readingTime}</span>
+            </>
+          )}
           {updatedDate && (
             <>
               <span class="meta-sep">·</span>
@@ -245,8 +287,51 @@ const showToc = postType === 'longform' && tocHeadings.length > 0;
 
       <Subscribe />
 
-      <Comments />
+      {showComments && <Comments />}
     </main>
     <Footer />
+    
+    <script>
+      let copyButtonLabel = "Copy";
+      let codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+      for (let codeBlock of codeBlocks) {
+        let wrapper = document.createElement("div");
+        wrapper.style.position = "relative";
+
+        let copyButton = document.createElement("button");
+        copyButton.className = "copy-code";
+        copyButton.innerHTML = copyButtonLabel;
+
+        codeBlock.setAttribute("tabindex", "0");
+        codeBlock.appendChild(copyButton);
+
+        // Put wrapper around code block
+        if (codeBlock.parentNode) {
+          codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+        }
+        wrapper.appendChild(codeBlock);
+
+        copyButton.addEventListener("click", async () => {
+          await copyCode(codeBlock, copyButton);
+        });
+      }
+
+      async function copyCode(block: HTMLElement, button: HTMLElement) {
+        let code = block.querySelector("code");
+        let text = code ? code.innerText : block.innerText;
+
+        await navigator.clipboard.writeText(text);
+
+        // Visual feedback
+        button.innerText = "Copied!";
+        button.style.background = "rgba(255, 255, 255, 0.4)";
+
+        setTimeout(() => {
+          button.innerText = copyButtonLabel;
+          button.style.background = "rgba(255, 255, 255, 0.1)";
+        }, 1200);
+      }
+    </script>
   </body>
 </html>
