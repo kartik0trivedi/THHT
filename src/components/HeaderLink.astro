@@ -21,7 +21,7 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
     font-weight: 400;
     text-decoration: none;
     color: var(--ink-muted);
-    padding: 0.35em 0.65em;
+    padding: 0.5rem 0.75rem; /* Increased base tap target */
     border-radius: 6px;
     letter-spacing: 0.02em;
     transition: color var(--transition), background var(--transition);
@@ -37,5 +37,11 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
     color: var(--ink);
     font-weight: 500;
     background: var(--paper-warm);
+  }
+
+  @media (max-width: 720px) {
+    a {
+      padding: 0.75rem 0.9rem; /* Minimum 44px tap target height on mobile for accessibility */
+    }
   }
 </style>
