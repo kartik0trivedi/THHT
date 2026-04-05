@@ -3,7 +3,6 @@
    Inspired by Substack & Medium: clean, warm, readable.
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
 
 /* ── Design Tokens ── */
 :root {
@@ -105,7 +104,8 @@ p {
 a {
   color: var(--ink);
   text-decoration: underline;
-  text-decoration-color: var(--border);
+  text-decoration-color: var(--ink-muted);
+  text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   transition: color var(--transition), text-decoration-color var(--transition);
 }
