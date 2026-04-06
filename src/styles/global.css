@@ -58,7 +58,7 @@ main {
   width: var(--content-width);
   max-width: calc(100% - var(--content-padding) * 2);
   margin: 0 auto;
-  padding: 3rem var(--content-padding);
+  padding: 2rem var(--content-padding);
 }
 
 /* ── Headings ── */
@@ -96,8 +96,8 @@ p {
 .prose h4,
 .prose h5,
 .prose h6 {
-  margin-top: 2.2em;
-  margin-bottom: 0.8em;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
 }
 
 /* ── Links ── */
