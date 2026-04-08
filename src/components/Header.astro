@@ -27,15 +27,14 @@ import thhtLogo from '../assets/thht-logo.svg';
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
-    padding: 0 var(--content-padding);
   }
 
   nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: var(--content-width);
-    max-width: calc(100% - var(--content-padding) * 2);
+    width: min(1380px, calc(100% - 2rem));
+    max-width: none;
     margin: 0 auto;
     height: 60px;
     gap: 1rem;

@@ -125,15 +125,20 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
       .prose {
         max-width: min(100%, 720px);
         margin: 0 auto;
+        overflow: visible;
       }
 
       .rail {
         display: none;
+        align-self: start;
+      }
+
+      .toc-rail {
+        position: sticky;
+        top: 6.5rem;
       }
 
       .rail-panel {
-        position: sticky;
-        top: 6.5rem;
         max-height: calc(100vh - 8rem);
         overflow: auto;
         padding: 1rem 1.1rem;
@@ -153,15 +158,13 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
         color: var(--ink-muted);
       }
 
-      .toc-list,
-      .note-list {
+      .toc-list {
         list-style: none;
         padding: 0;
         margin: 0;
       }
 
-      .toc-list li + li,
-      .note-list li + li {
+      .toc-list li + li {
         margin-top: 0.55rem;
       }
 
@@ -217,56 +220,6 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
         left: 0.72rem;
       }
 
-      .notes-rail {
-        min-height: 0;
-      }
-
-      .note-list {
-        counter-reset: sidenote;
-      }
-
-      .note-list li {
-        color: var(--ink-soft);
-      }
-
-      .note-card {
-        padding: 0.95rem 1rem;
-        border-radius: 12px;
-        background: var(--paper-warm);
-        border: 1px solid var(--border);
-      }
-
-      .note-index {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1.5rem;
-        height: 1.5rem;
-        margin-bottom: 0.55rem;
-        border-radius: 999px;
-        background: rgba(192, 57, 43, 0.1);
-        color: var(--accent);
-        font-family: var(--font-sans);
-        font-size: 0.78rem;
-        font-weight: 700;
-      }
-
-      .note-card :where(p, li) {
-        font-family: var(--font-serif);
-        font-size: 0.96rem;
-        line-height: 1.65;
-        color: var(--ink-soft);
-      }
-
-      .note-card :where(p:last-child, ul:last-child, ol:last-child) {
-        margin-bottom: 0;
-      }
-
-      .note-card a[data-footnote-backref] {
-        font-family: var(--font-sans);
-        font-size: 0.82rem;
-      }
-
       /* Back link */
       .back-link {
         display: inline-flex;
@@ -318,101 +271,111 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
         scroll-margin-top: 6.75rem;
       }
 
-      .prose sup {
-        line-height: 0;
+      .prose :global(.sidenote-wrapper) {
+        display: inline;
       }
 
-      .prose [data-footnote-ref] {
+      .prose :global(.sidenote-number),
+      .prose :global(.sidenote-toggle) {
         font-family: var(--font-sans);
-        font-size: 0.82rem;
-        text-decoration: none;
+        font-size: 0.78rem;
+        font-weight: 700;
         color: var(--accent);
       }
 
-      .prose .footnotes {
-        margin-top: 4rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border);
+      .prose :global(.sidenote-number[data-number]),
+      .prose :global(.sidenote-toggle[data-number]) {
+        font-size: 0;
       }
 
-      .prose .footnotes h2 {
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
+      .prose :global(.sidenote-number[data-number]::after),
+      .prose :global(.sidenote-toggle[data-number]::after) {
+        content: attr(data-number);
+        font-size: 0.78rem;
       }
 
-      .prose .footnotes ol {
-        padding-left: 1.2rem;
+      .prose :global(.sidenote-toggle) {
+        display: inline;
+        margin-left: 0.08rem;
+        cursor: pointer;
+        vertical-align: super;
+        line-height: 0;
+        user-select: none;
       }
 
-      .prose .footnotes li {
-        margin-bottom: 1rem;
-      }
-
-      .prose .footnotes p {
-        margin-bottom: 0.6rem;
-      }
-
-      .prose.has-sidenotes .footnotes {
+      .prose :global(.sidenote-toggle-checkbox) {
         position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
+        opacity: 0;
+        pointer-events: none;
       }
 
-      @media (min-width: 960px) {
+      .prose :global(.sidenote) {
+        display: none;
+        margin: 0.85rem 0 1rem;
+        padding: 0.95rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--paper-warm);
+        box-shadow: var(--shadow-sm);
+        font-family: var(--font-serif);
+        font-size: 0.96rem;
+        line-height: 1.65;
+        color: var(--ink-soft);
+      }
+
+      .prose :global(.sidenote-number) {
+        margin-right: 0.35rem;
+      }
+
+      .prose :global(.sidenote-toggle-checkbox:checked + .sidenote) {
+        display: block;
+      }
+
+      .prose :global(.sidenote :where(a, em, strong, code)) {
+        font-size: inherit;
+      }
+
+      @media (min-width: 1200px) {
         .post-body.longform {
-          grid-template-columns: minmax(190px, 240px) minmax(0, 720px);
+          grid-template-columns: minmax(190px, 1fr) minmax(0, 720px) minmax(0, 1fr);
           gap: 2rem;
-        }
-
-        .post-body.has-notes:not(.longform) {
-          grid-template-columns: minmax(0, 720px) minmax(220px, 280px);
-          justify-content: center;
-        }
-
-        .post-body.longform.has-notes {
-          grid-template-columns: minmax(190px, 240px) minmax(0, 720px) minmax(220px, 280px);
         }
 
         .post-body.longform .toc-rail {
           display: block;
-        }
-
-        .post-body.longform .notes-rail[data-enhanced='true'] {
-          display: block;
-        }
-
-        .post-body.has-notes:not(.longform) .notes-rail[data-enhanced='true'] {
-          display: block;
-          grid-column: 2;
-        }
-
-        .toc-rail {
           grid-column: 1;
+          justify-self: end;
+          max-width: 240px;
+          width: 100%;
         }
 
-        .prose-wrap {
+        .post-body.longform .prose-wrap {
           grid-column: 2;
         }
 
-        .notes-rail {
-          grid-column: 3;
-        }
-      }
-
-      @media (max-width: 959px) {
-        .toc-rail {
+        .prose :global(.sidenote) {
           display: block;
+          float: right;
+          clear: right;
+          width: 250px;
+          margin-top: 0.15rem;
+          margin-right: -290px;
+          margin-bottom: 1.25rem;
+          padding: 0;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
+          box-shadow: none;
+          font-size: 0.92rem;
+          line-height: 1.55;
         }
 
-        .toc-rail .rail-panel {
-          position: static;
-          max-height: none;
+        .prose :global(.sidenote-toggle) {
+          pointer-events: none;
+        }
+
+        .prose :global(.sidenote-toggle-checkbox) {
+          display: none;
         }
       }
 
@@ -425,6 +388,14 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
         .post-title { font-size: 1.9rem; }
         .post-body {
           gap: 1.5rem;
+        }
+
+        .toc-rail {
+          display: block;
+        }
+
+        .toc-rail .rail-panel {
+          max-height: none;
         }
       }
     </style>
@@ -496,13 +467,6 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
               <slot />
             </article>
           </div>
-
-          <aside class="rail notes-rail" aria-label="Footnotes" data-notes-rail>
-            <div class="rail-panel">
-              <h2 class="rail-title">Footnotes</h2>
-              <ol class="note-list" data-note-list></ol>
-            </div>
-          </aside>
         </div>
       </div>
 
@@ -556,8 +520,6 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
 
       let prose = document.querySelector("[data-prose]");
       let tocLinks = Array.from(document.querySelectorAll("[data-toc-link]"));
-      let notesRail = document.querySelector("[data-notes-rail]");
-      let noteList = document.querySelector("[data-note-list]");
 
       if (prose && tocLinks.length > 0) {
         let headings = tocLinks
@@ -614,36 +576,6 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
           }
 
           setActiveToc(headings[0].slug);
-        }
-      }
-
-      if (prose && notesRail instanceof HTMLElement && noteList instanceof HTMLElement) {
-        let footnotes = prose.querySelector(".footnotes");
-        let footnoteItems = footnotes?.querySelectorAll("ol > li") ?? [];
-
-        if (footnoteItems.length > 0) {
-          for (let item of footnoteItems) {
-            let noteId = item.getAttribute("id") ?? "";
-            let noteNumber = noteId.replace(/^fn-/, "") || String(noteList.children.length + 1);
-            let cloned = item.cloneNode(true);
-            let listItem = document.createElement("li");
-            let card = document.createElement("div");
-            let index = document.createElement("span");
-
-            listItem.setAttribute("data-note-id", noteId);
-            card.className = "note-card";
-            index.className = "note-index";
-            index.textContent = noteNumber;
-
-            card.appendChild(index);
-            card.append(...cloned.childNodes);
-            listItem.appendChild(card);
-            noteList.appendChild(listItem);
-          }
-
-          notesRail.dataset.enhanced = "true";
-          notesRail.closest(".post-body")?.classList.add("has-notes");
-          prose.classList.add("has-sidenotes");
         }
       }
     </script>
