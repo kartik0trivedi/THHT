@@ -158,8 +158,11 @@ function buildScheduleParams(isoString) {
   };
 }
 
+const FROM_NAME = 'Kartik Trivedi';
+const FROM_EMAIL = 'hello@thht.in';
+
 app.post('/api/send', async (req, res) => {
-  const { slug, subject, preheader, scheduleISO } = req.body;
+  const { slug, campaignName, subject, preheader, scheduleISO } = req.body;
 
   try {
     const token = await getAccessToken();
@@ -167,8 +170,9 @@ app.post('/api/send', async (req, res) => {
     // Create campaign
     const contentURL = `https://thht.in/newsletter/${slug}${preheader ? `?preheader=${encodeURIComponent(preheader)}` : ''}`;
     const createParams = new URLSearchParams({
-      campaignname: subject,
-      from_email: process.env.ZOHO_FROM_EMAIL,
+      campaignname: campaignName || subject,
+      from_email: FROM_EMAIL,
+      from_name: FROM_NAME,
       subject,
       list_details: JSON.stringify([{ listkey: process.env.ZOHO_LIST_KEY, segmentid: '0' }]),
       content_url: contentURL,

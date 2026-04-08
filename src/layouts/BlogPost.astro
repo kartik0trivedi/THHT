@@ -40,10 +40,21 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
   <head>
     <BaseHead title={title} description={description} image={ogImage} />
     <style>
+      main {
+        width: min(1380px, calc(100% - 2rem));
+        max-width: none;
+        padding-inline: 1rem;
+      }
+
+      .post-shell {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
       .post-header {
         padding: 2rem 0 1.5rem;
         border-bottom: 1px solid var(--border);
-        margin-bottom: 2rem;
       }
 
       .post-meta {
@@ -100,33 +111,39 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
         box-shadow: var(--shadow-md);
       }
 
-      .prose {
-        max-width: var(--content-width);
-        margin: 0 auto;
-      }
-
       .post-body {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
         gap: 2.5rem;
-      }
-
-      .post-body.longform {
-        grid-template-columns: minmax(0, 1fr) 260px;
         align-items: start;
       }
 
-      .toc {
+      .prose-wrap {
+        min-width: 0;
+      }
+
+      .prose {
+        max-width: min(100%, 720px);
+        margin: 0 auto;
+      }
+
+      .rail {
+        display: none;
+      }
+
+      .rail-panel {
         position: sticky;
         top: 6.5rem;
+        max-height: calc(100vh - 8rem);
+        overflow: auto;
         padding: 1rem 1.1rem;
         border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--paper);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--paper) 84%, white 16%);
         box-shadow: var(--shadow-sm);
       }
 
-      .toc-title {
+      .rail-title {
         margin: 0 0 0.9rem;
         font-family: var(--font-sans);
         font-size: 0.8rem;
@@ -136,33 +153,118 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
         color: var(--ink-muted);
       }
 
-      .toc-list {
+      .toc-list,
+      .note-list {
         list-style: none;
         padding: 0;
         margin: 0;
       }
 
-      .toc-list li + li {
+      .toc-list li + li,
+      .note-list li + li {
         margin-top: 0.55rem;
       }
 
       .toc-list a {
         display: block;
+        position: relative;
+        padding: 0.18rem 0.2rem 0.18rem 0.9rem;
+        border-radius: 8px;
         font-family: var(--font-sans);
         font-size: 0.92rem;
         line-height: 1.45;
         color: var(--ink-muted);
         text-decoration: none;
+        transition: color var(--transition), background-color var(--transition);
+      }
+
+      .toc-list a::before {
+        content: '';
+        position: absolute;
+        left: 0.12rem;
+        top: 0.45rem;
+        bottom: 0.45rem;
+        width: 3px;
+        border-radius: 999px;
+        background: transparent;
+        transition: background-color var(--transition);
       }
 
       .toc-list a:hover {
         color: var(--ink);
         text-decoration: none;
+        background: rgba(192, 57, 43, 0.05);
+      }
+
+      .toc-list a.active,
+      .toc-list a[aria-current='true'] {
+        color: var(--ink);
+        background: rgba(192, 57, 43, 0.09);
+        font-weight: 600;
+      }
+
+      .toc-list a.active::before,
+      .toc-list a[aria-current='true']::before {
+        background: var(--accent);
       }
 
       .toc-list .depth-3 {
-        padding-left: 0.9rem;
+        padding-left: 1.5rem;
         font-size: 0.88rem;
+      }
+
+      .toc-list .depth-3::before {
+        left: 0.72rem;
+      }
+
+      .notes-rail {
+        min-height: 0;
+      }
+
+      .note-list {
+        counter-reset: sidenote;
+      }
+
+      .note-list li {
+        color: var(--ink-soft);
+      }
+
+      .note-card {
+        padding: 0.95rem 1rem;
+        border-radius: 12px;
+        background: var(--paper-warm);
+        border: 1px solid var(--border);
+      }
+
+      .note-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-bottom: 0.55rem;
+        border-radius: 999px;
+        background: rgba(192, 57, 43, 0.1);
+        color: var(--accent);
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .note-card :where(p, li) {
+        font-family: var(--font-serif);
+        font-size: 0.96rem;
+        line-height: 1.65;
+        color: var(--ink-soft);
+      }
+
+      .note-card :where(p:last-child, ul:last-child, ol:last-child) {
+        margin-bottom: 0;
+      }
+
+      .note-card a[data-footnote-backref] {
+        font-family: var(--font-sans);
+        font-size: 0.82rem;
       }
 
       /* Back link */
@@ -212,12 +314,117 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
         background: rgba(255, 255, 255, 0.2);
       }
 
-      @media (max-width: 720px) {
-        .post-title { font-size: 1.9rem; }
-        .post-body.longform { grid-template-columns: minmax(0, 1fr); }
-        .toc {
+      .prose :where(h2, h3, h4, h5, h6) {
+        scroll-margin-top: 6.75rem;
+      }
+
+      .prose sup {
+        line-height: 0;
+      }
+
+      .prose [data-footnote-ref] {
+        font-family: var(--font-sans);
+        font-size: 0.82rem;
+        text-decoration: none;
+        color: var(--accent);
+      }
+
+      .prose .footnotes {
+        margin-top: 4rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .prose .footnotes h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      .prose .footnotes ol {
+        padding-left: 1.2rem;
+      }
+
+      .prose .footnotes li {
+        margin-bottom: 1rem;
+      }
+
+      .prose .footnotes p {
+        margin-bottom: 0.6rem;
+      }
+
+      .prose.has-sidenotes .footnotes {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (min-width: 960px) {
+        .post-body.longform {
+          grid-template-columns: minmax(190px, 240px) minmax(0, 720px);
+          gap: 2rem;
+        }
+
+        .post-body.has-notes:not(.longform) {
+          grid-template-columns: minmax(0, 720px) minmax(220px, 280px);
+          justify-content: center;
+        }
+
+        .post-body.longform.has-notes {
+          grid-template-columns: minmax(190px, 240px) minmax(0, 720px) minmax(220px, 280px);
+        }
+
+        .post-body.longform .toc-rail {
+          display: block;
+        }
+
+        .post-body.longform .notes-rail[data-enhanced='true'] {
+          display: block;
+        }
+
+        .post-body.has-notes:not(.longform) .notes-rail[data-enhanced='true'] {
+          display: block;
+          grid-column: 2;
+        }
+
+        .toc-rail {
+          grid-column: 1;
+        }
+
+        .prose-wrap {
+          grid-column: 2;
+        }
+
+        .notes-rail {
+          grid-column: 3;
+        }
+      }
+
+      @media (max-width: 959px) {
+        .toc-rail {
+          display: block;
+        }
+
+        .toc-rail .rail-panel {
           position: static;
-          order: -1;
+          max-height: none;
+        }
+      }
+
+      @media (max-width: 720px) {
+        main {
+          width: calc(100% - 1rem);
+          padding-inline: 0.5rem;
+        }
+
+        .post-title { font-size: 1.9rem; }
+        .post-body {
+          gap: 1.5rem;
         }
       }
     </style>
@@ -226,63 +433,77 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
   <body>
     <Header />
     <main>
-      <a href="/writing" class="back-link">← All writing</a>
+      <div class="post-shell">
+        <a href="/writing" class="back-link">← All writing</a>
 
-      {heroImage && (
-        <div class="hero-image">
-          <Image width={1020} height={510} src={heroImage} alt="" />
-        </div>
-      )}
-
-      <header class="post-header">
-        <div class="post-meta">
-          <span class="post-date"><FormattedDate date={pubDate} /></span>
-          {readingTime && (
-            <>
-              <span class="meta-sep">·</span>
-              <span class="post-date">{readingTime}</span>
-            </>
-          )}
-          {updatedDate && (
-            <>
-              <span class="meta-sep">·</span>
-              <span class="post-updated">
-                Updated <FormattedDate date={updatedDate} />
-              </span>
-            </>
-          )}
-        </div>
-        <h1 class="post-title">{title}</h1>
-        {description && <p class="post-description">{description}</p>}
-        {tags && tags.length > 0 && (
-          <div style="margin-top: 1rem;">
-            <TagList tags={tags} />
+        {heroImage && (
+          <div class="hero-image">
+            <Image width={1020} height={510} src={heroImage} alt="" />
           </div>
         )}
-      </header>
 
-      <div class:list={['post-body', { longform: showToc }]}>
-        <article class="prose">
-          <slot />
-        </article>
+        <header class="post-header">
+          <div class="post-meta">
+            <span class="post-date"><FormattedDate date={pubDate} /></span>
+            {readingTime && (
+              <>
+                <span class="meta-sep">·</span>
+                <span class="post-date">{readingTime}</span>
+              </>
+            )}
+            {updatedDate && (
+              <>
+                <span class="meta-sep">·</span>
+                <span class="post-updated">
+                  Updated <FormattedDate date={updatedDate} />
+                </span>
+              </>
+            )}
+          </div>
+          <h1 class="post-title">{title}</h1>
+          {description && <p class="post-description">{description}</p>}
+          {tags && tags.length > 0 && (
+            <div style="margin-top: 1rem;">
+              <TagList tags={tags} />
+            </div>
+          )}
+        </header>
 
-        {showToc && (
-          <aside class="toc" aria-label="Table of contents">
-            <h2 class="toc-title">Table of contents</h2>
-            <ol class="toc-list">
-              {tocHeadings.map((heading) => (
-                <li>
-                  <a
-                    href={`#${heading.slug}`}
-                    class:list={[`depth-${heading.depth}`]}
-                  >
-                    {heading.text}
-                  </a>
-                </li>
-              ))}
-            </ol>
+        <div class:list={['post-body', { longform: showToc }]}>
+          {showToc && (
+            <aside class="rail toc-rail" aria-label="Table of contents">
+              <div class="rail-panel">
+                <h2 class="rail-title">On this page</h2>
+                <ol class="toc-list" data-toc-list>
+                  {tocHeadings.map((heading) => (
+                    <li>
+                      <a
+                        href={`#${heading.slug}`}
+                        class:list={[`depth-${heading.depth}`]}
+                        data-toc-link={heading.slug}
+                      >
+                        {heading.text}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </aside>
+          )}
+
+          <div class="prose-wrap">
+            <article class="prose" data-prose>
+              <slot />
+            </article>
+          </div>
+
+          <aside class="rail notes-rail" aria-label="Footnotes" data-notes-rail>
+            <div class="rail-panel">
+              <h2 class="rail-title">Footnotes</h2>
+              <ol class="note-list" data-note-list></ol>
+            </div>
           </aside>
-        )}
+        </div>
       </div>
 
       <Subscribe />
@@ -331,6 +552,99 @@ const ogImage = heroImage ?? (id ? `/og/${id}.png` : undefined);
           button.innerText = copyButtonLabel;
           button.style.background = "rgba(255, 255, 255, 0.1)";
         }, 1200);
+      }
+
+      let prose = document.querySelector("[data-prose]");
+      let tocLinks = Array.from(document.querySelectorAll("[data-toc-link]"));
+      let notesRail = document.querySelector("[data-notes-rail]");
+      let noteList = document.querySelector("[data-note-list]");
+
+      if (prose && tocLinks.length > 0) {
+        let headings = tocLinks
+          .map((link) => {
+            let slug = link.getAttribute("data-toc-link");
+            if (!slug) return null;
+            let heading = prose.querySelector(`#${CSS.escape(slug)}`);
+            return heading ? { link, heading, slug } : null;
+          })
+          .filter(Boolean);
+
+        if (headings.length > 0) {
+          let setActiveToc = (slug) => {
+            for (let entry of headings) {
+              let isActive = entry.slug === slug;
+              entry.link.classList.toggle("active", isActive);
+              if (isActive) {
+                entry.link.setAttribute("aria-current", "true");
+              } else {
+                entry.link.removeAttribute("aria-current");
+              }
+            }
+          };
+
+          let visibleHeadings = new Map();
+          let observer = new IntersectionObserver((entries) => {
+            for (let entry of entries) {
+              let id = entry.target.getAttribute("id");
+              if (!id) continue;
+              if (entry.isIntersecting) {
+                visibleHeadings.set(id, entry.boundingClientRect.top);
+              } else {
+                visibleHeadings.delete(id);
+              }
+            }
+
+            if (visibleHeadings.size > 0) {
+              let active = Array.from(visibleHeadings.entries())
+                .sort((a, b) => Math.abs(a[1]) - Math.abs(b[1]))[0]?.[0];
+              if (active) setActiveToc(active);
+            } else {
+              let current = headings
+                .filter((entry) => entry.heading.getBoundingClientRect().top <= 140)
+                .at(-1) ?? headings[0];
+              if (current) setActiveToc(current.slug);
+            }
+          }, {
+            rootMargin: "-18% 0px -62% 0px",
+            threshold: [0, 0.2, 0.6, 1],
+          });
+
+          for (let entry of headings) {
+            observer.observe(entry.heading);
+          }
+
+          setActiveToc(headings[0].slug);
+        }
+      }
+
+      if (prose && notesRail instanceof HTMLElement && noteList instanceof HTMLElement) {
+        let footnotes = prose.querySelector(".footnotes");
+        let footnoteItems = footnotes?.querySelectorAll("ol > li") ?? [];
+
+        if (footnoteItems.length > 0) {
+          for (let item of footnoteItems) {
+            let noteId = item.getAttribute("id") ?? "";
+            let noteNumber = noteId.replace(/^fn-/, "") || String(noteList.children.length + 1);
+            let cloned = item.cloneNode(true);
+            let listItem = document.createElement("li");
+            let card = document.createElement("div");
+            let index = document.createElement("span");
+
+            listItem.setAttribute("data-note-id", noteId);
+            card.className = "note-card";
+            index.className = "note-index";
+            index.textContent = noteNumber;
+
+            card.appendChild(index);
+            card.append(...cloned.childNodes);
+            listItem.appendChild(card);
+            noteList.appendChild(listItem);
+          }
+
+          notesRail.dataset.enhanced = "true";
+          notesRail.closest(".post-body")?.classList.add("has-notes");
+          prose.classList.add("has-sidenotes");
+        }
       }
     </script>
   </body>

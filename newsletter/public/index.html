@@ -201,6 +201,23 @@
       width: 100%;
     }
 
+    .from-display {
+      background: #faf9f7;
+      border: 1px solid #e8e4de;
+      border-radius: 6px;
+      padding: 9px 12px;
+    }
+    .from-name {
+      font-size: 14px;
+      color: #1a1a1a;
+      font-weight: 600;
+    }
+    .from-email {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+
     .empty-preview {
       flex: 1;
       display: flex;
@@ -226,6 +243,14 @@
   <aside class="panel">
 
     <div class="panel-section">
+      <label>From</label>
+      <div class="from-display">
+        <div class="from-name">Kartik Trivedi</div>
+        <div class="from-email">hello@thht.in</div>
+      </div>
+    </div>
+
+    <div class="panel-section">
       <label for="post-select">Post</label>
       <select id="post-select">
         <option value="">— select a post —</option>
@@ -233,10 +258,13 @@
     </div>
 
     <div class="panel-section">
-      <label for="subject">Subject line</label>
-      <input type="text" id="subject" placeholder="e.g. Who reads blogs anymore?" maxlength="80">
-      <div class="char-count" id="subject-count">0 / 60</div>
-
+      <label for="campaign-name">Campaign name</label>
+      <input type="text" id="campaign-name" placeholder="e.g. April 2025 — Issue #12" maxlength="100">
+      <div style="margin-top: 16px;">
+        <label for="subject">Subject line</label>
+        <input type="text" id="subject" placeholder="e.g. Who reads blogs anymore?" maxlength="80">
+        <div class="char-count" id="subject-count">0 / 60</div>
+      </div>
       <div style="margin-top: 16px;">
         <label for="preheader">Preheader</label>
         <input type="text" id="preheader" placeholder="e.g. Not me. And yet, here we are." maxlength="120">
@@ -299,11 +327,14 @@
       showEmpty();
       return;
     }
-    // Auto-fill subject from post title
+    // Auto-fill subject and campaign name from post title
     const title = e.target.options[e.target.selectedIndex].textContent;
     if (!document.getElementById('subject').value) {
       document.getElementById('subject').value = title;
       updateCharCount('subject', 60);
+    }
+    if (!document.getElementById('campaign-name').value) {
+      document.getElementById('campaign-name').value = title;
     }
     document.getElementById('send-btn').disabled = false;
     refreshPreview();
@@ -355,12 +386,14 @@
   }
 
   async function send() {
+    const campaignName = document.getElementById('campaign-name').value.trim();
     const subject = document.getElementById('subject').value.trim();
     const preheader = document.getElementById('preheader').value.trim();
     const scheduleISO = sendMode === 'schedule'
       ? document.getElementById('schedule-time').value
       : null;
 
+    if (!campaignName) { showStatus('error', 'Campaign name is required.'); return; }
     if (!subject) { showStatus('error', 'Subject line is required.'); return; }
     if (sendMode === 'schedule' && !scheduleISO) { showStatus('error', 'Pick a date and time to schedule.'); return; }
 
@@ -373,7 +406,7 @@
       const res = await fetch('/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: currentSlug, subject, preheader, scheduleISO }),
+        body: JSON.stringify({ slug: currentSlug, campaignName, subject, preheader, scheduleISO }),
       });
       const data = await res.json();
       if (data.ok) {

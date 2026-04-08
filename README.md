@@ -58,7 +58,7 @@ src/content/drafts/your-post-slug.md
 When ready to publish, move the file into:
 
 ```sh
-src/content/blog/your-post-slug.md
+src/content/writing/your-post-slug.md
 ```
 
 Minimum required frontmatter:
@@ -74,13 +74,20 @@ tags: ["ideas", "writing"]   # optional — freeform, any strings
 Your post content here in Markdown.
 ```
 
-The post will appear at `/blog/your-post-slug/` automatically.
+The post will appear at `/writing/your-post-slug/` automatically.
 
-Post types:
+Longform options:
 
 ```yaml
-postType: "standard"   # default
-postType: "longform"   # adds a table of contents from headings
+toc: true   # adds a table of contents from headings
+```
+
+Markdown footnotes are supported with standard GFM syntax:
+
+```md
+Some text with a note.[^1]
+
+[^1]: This becomes a normal footnote on small screens and a right-rail note on larger screens.
 ```
 
 ---
@@ -100,7 +107,7 @@ THHT/
 │   │   ├── FormattedDate.astro
 │   │   └── TagList.astro     # Tag pill component
 │   ├── content/
-│   │   ├── blog/        # Published posts
+│   │   ├── writing/     # Published posts
 │   │   ├── drafts/      # Unpublished posts, same schema as blog posts
 │   │   └── templates/   # Starter files for standard / longform posts
 │   ├── layouts/
@@ -108,7 +115,7 @@ THHT/
 │   ├── pages/
 │   │   ├── index.astro       # Homepage
 │   │   ├── about.astro       # About page
-│   │   ├── blog/
+│   │   ├── writing/
 │   │   │   ├── index.astro   # Full post archive
 │   │   │   └── [...slug].astro
 │   │   ├── tags/
